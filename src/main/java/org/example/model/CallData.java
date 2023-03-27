@@ -1,32 +1,24 @@
 package org.example.model;
 
+import org.joda.time.DateTime;
+
 import java.time.LocalDateTime;
 
-public class CallDataRecord {
-    private long phoneNumber;
+public class CallData {
+    private String phoneNumber;
     private String callType;
     private LocalDateTime dateTimeCallStart;
     private LocalDateTime dateTimeCallEnd;
     private String fareType;
 
 
-    public CallDataRecord(){}
+    public CallData(){}
 
-
-    public CallDataRecord(long phoneNumber, String callType, LocalDateTime dateTimeCallStart,
-                          LocalDateTime dateTimeCallEnd, String fareType) {
-        this.phoneNumber = phoneNumber;
-        this.callType = callType;
-        this.dateTimeCallStart = dateTimeCallStart;
-        this.dateTimeCallEnd = dateTimeCallEnd;
-        this.fareType = fareType;
-    }
-
-    public long getPhoneNumber() {
+    public String getPhoneNumber() {
         return phoneNumber;
     }
 
-    public void setPhoneNumber(long phoneNumber) {
+    public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 
@@ -60,5 +52,16 @@ public class CallDataRecord {
 
     public void setFareType(String fareType) {
         this.fareType = fareType;
+    }
+
+    @Override
+    public String toString() {
+        return "CallData{" +
+                "phoneNumber='" + phoneNumber + '\'' +
+                ", callType='" + callType + '\'' +
+                ", dateTimeCallStart=" + dateTimeCallStart +
+                ", dateTimeCallEnd=" + dateTimeCallEnd +
+                ", fareType='" + fareType + '\'' +
+                '}';
     }
 }
