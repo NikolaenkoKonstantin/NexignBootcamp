@@ -114,14 +114,15 @@ public class CallDataService {
 
     private double tariff(String callType, String fareType, int minutesUsed, int minute){
         double cost = 0;
+        int tempMinute = minutesUsed + minute;
 
-        if(fareType.equals("06") && (minutesUsed + minute) > 300){
-            cost = minute;
+        if(fareType.equals("06") && tempMinute > 300){
+            cost = minutesUsed > 300 ? minute : (tempMinute - 300);
         } else if (fareType.equals("03")) {
             cost = 1.5 * minute;
         } else if (fareType.equals("11") && callType.equals("01")) {
-            if((minutesUsed + minute) > 100){
-                cost += 1.5 * minute;
+            if(tempMinute > 100){
+                cost += minutesUsed > 100 ? 1.5 * minute : (tempMinute - 100) * 1.5;
             } else {
                 cost += 0.5 * minute;
             }
@@ -131,6 +132,8 @@ public class CallDataService {
     }
 
 
+    // извиняюсь за эту функцию, мне нужно научиться придумывать более локаничные функции
+    // я стараюсь, но не всегда получается
     private void createReport(String phoneNumber, List<CallData> callDataList, int i){
         try(FileWriter writer = new FileWriter("reports/report" + i + ".txt", false))
         {
@@ -144,20 +147,22 @@ public class CallDataService {
             writer.write("| Call Type |   Start Time        |     End Time        | Duration | Cost  |\n");
             writer.write("----------------------------------------------------------------------------\n");
 
-            for(int j = 0; j < callDataList.size(); j++){
+            for(int j = 0; j < callDataList.size(); j++) {
                 CallData callData = callDataList.get(j);
 
-                String callType = callData.getCallType();
-                String fireType = callData.getFareType();
-                String callStart = dateTimeFormat(callData.getDateTimeCallStart());
-                String callEnd = dateTimeFormat(callData.getDateTimeCallEnd());
                 LocalTime time = calculateDuration(callData);
-                double cost = tariff(callData.getCallType(), callData.getFareType(),
-                        minutesUsed, time.getMinute() + (time.getSecond() > 0 ? 1 : 0));
-                totalCost += cost;
+                int minute = time.getMinute() + (time.getSecond() > 0 ? 1 : 0);
 
-                writer.write("|     " + callType + "    | " + callStart
-                        + " | " + callEnd + " | " + time + " |  " + cost + " |\n");
+                if (callData.getFareType().equals("11") && callData.getCallType().equals("02")) {
+                    minute = 0;
+                }
+
+                double cost = tariff(callData.getCallType(), callData.getFareType(), minutesUsed, minute);
+                totalCost += cost;
+                minutesUsed += minute;
+
+                writer.write("|     " + callData.getCallType() + "    | " + dateTimeFormat(callData.getDateTimeCallStart())
+                        + " | " + dateTimeFormat(callData.getDateTimeCallEnd()) + " | " + time + " |  " + cost + " |\n");
             }
 
             if(callDataList.get(0).getFareType().equals("06")){

@@ -1,7 +1,5 @@
 package org.example.model;
 
-import org.joda.time.DateTime;
-
 import java.time.LocalDateTime;
 
 public class CallData {
